@@ -1,0 +1,36 @@
+*/#include <stdint.h>#if !defined(__SOFT_FP__) && defined(__ARM_FP)
+#warning "FPU is not initialized, but the project is compiling for an FPU. Please initialize the FPU before use."
+#endif
+int delayy(int );
+int main(void)
+{
+uint32_t *pClkctrlreg = (uint32_t*)0x4002104C;
+uint32_t *pPortDModeReg = (uint32_t*)0x48000400;
+uint32_t *pPortDOutReg = (uint32_t*)0x48000414;
+
+//uint32_t *pPortDOutReg = (uint32_t*)0x48000414;
+//1. Enable clock control register (RCC_AHB2ENR)
+*pClkctrlreg |= 0x02;//2.Configure the mode of the IO pin as output
+
+//a. Clear 10th and 11th bit position
+*pPortDModeReg &= 0xcfffffff;//b. make 10th bit position as 1 (SET)*pPortDModeReg |= 0x10000000;
+
+//3. GPIOA output data register (used to write)
+while(1){
+*pPortDOutReg |= 0x4000;
+delayy(5);
+*pPortDOutReg &= 0x0000;
+delayy(5);
+}
+
+/* Loop forever */
+
+//while(1);
+return 0;}
+int delayy(int x){
+while(x>0){
+x--;
+}
+return 0;
+}
+
